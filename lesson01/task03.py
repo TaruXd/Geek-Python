@@ -8,8 +8,11 @@ while True:
     try:
         number = int(number)  # проверка на целочисленность значения
         if number > 0:  # проверка на положительность значения
-            calculation = number*3 + number*10*2 + number*100
-            print("Результат расчета по формуле n + nn + nnn равен ", calculation)
+            calculation_level1 = int(number)
+            calculation_level2 = int(str(number) + str(number))
+            calculation_level3 = int(str(number) + str(number) + str(number))
+            result = calculation_level1 + calculation_level2 + calculation_level3
+            print("Результат расчета по формуле n + nn + nnn равен ", result)
         else:
             error = 1
             print(check_number_error)
