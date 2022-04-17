@@ -8,7 +8,8 @@ while True:
     error = 0
     try:
         secs = int(secs_amount) % 60  # секунды
-        mins = int(secs_amount) // 60 // 60  # минуты
+        mins = int(secs_amount) // 60 % 60  # минуты
+        print(mins)
         hours = int(secs_amount) // 3600  # часы
         print("{:02d}".format(hours), ":", "{:02d}".format(mins), ":", "{:02d}".format(secs))
     except ValueError:
