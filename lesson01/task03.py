@@ -8,9 +8,9 @@ while True:
     try:
         number = int(number)  # проверка на целочисленность значения
         if number > 0:  # проверка на положительность значения
-            calculation_level1 = int(number)
-            calculation_level2 = int(str(number) + str(number))
-            calculation_level3 = int(str(number) + str(number) + str(number))
+            calculation_level1 = int(number)  # n
+            calculation_level2 = int(str(number) + str(number))  # склеиваем nn
+            calculation_level3 = int(str(number) + str(number) + str(number))  # склеиваем nnn
             result = calculation_level1 + calculation_level2 + calculation_level3
             print("Результат расчета по формуле n + nn + nnn равен ", result)
         else:
