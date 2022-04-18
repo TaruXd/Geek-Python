@@ -12,15 +12,15 @@ while True:
             error = 1
             print(check_number_error)
         else:
-            max_digit = 0
             curr_number = number
+            max_digit = curr_number % 10
             while True:
-                curr_digit = curr_number % 10
                 curr_number = curr_number // 10
-                if curr_number == 0:
-                    break
+                curr_digit = curr_number % 10
                 if curr_digit > max_digit:
                     max_digit = curr_digit
+                if curr_number == 0:
+                    break
             print("Максимальное значение из цифр в заданном числе равно ", max_digit)
     except ValueError:
         error = 1
