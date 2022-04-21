@@ -40,11 +40,15 @@ while not stop:
             break
         product_count = float(input("Введите количество товара повторно: "))
     count_uom = input("Введите единицы измерения товара: ")
+# Создание словаря для нового продукта с заданными выше ключами
     new_product_dict = {"название": product, "цена": price, "количество": product_count, "ед": count_uom}
-    product_tuple = (counter,new_product_dict)
+    product_tuple = (counter, new_product_dict)
+# Добавление в список товаров нового товара
     products_list.append(product_tuple)
     counter += counter
-    next_product = input("Добавить новый товар? Y/N :")
+
+# Запрос на добавление ещё одого нового товара. В случае n - выход из цикла создания списка товаров
+    next_product = input("Добавить ещё товар? Y/N :")
     while next_product.lower() != "y" and next_product.lower() != "n":
         next_product = input("Добавить новый товар? Укажите один из ответов 'Y' или 'N': ")
     if next_product.lower() == "n":
@@ -53,10 +57,13 @@ print("\nЗаданный список доваров:\n")
 for pos in range(len(products_list)):
     print(products_list[pos])
 
+# Создание пустых списков значений ключей по товарам
 product_names_list = []
 product_prices_list = []
 product_counts_list = []
 product_uoms_list = []
+
+# Заполнение списков значений ключей по товарам
 for pos in range(len(products_list)):
     product_tuple = products_list[pos]
     product_dict = product_tuple[1]
@@ -64,6 +71,8 @@ for pos in range(len(products_list)):
     product_prices_list.append(product_dict.get("цена"))
     product_counts_list.append(product_dict.get("количество"))
     product_uoms_list.append(product_dict.get("ед"))
+
+# Создание словаря для аналитики товаров
 products_analysis = {"название": product_names_list,
                      "цена": product_prices_list,
                      "количество": product_counts_list,

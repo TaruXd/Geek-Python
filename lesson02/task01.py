@@ -6,20 +6,19 @@
 my_list = [3, "text", (1, 3), 1.2, True, {1, 3, 4}, [5, 6]]
 
 # Не до конца ясно, что значит "скрипт проверки", поэтому сделаю задание в двух интерпретациях
+print("Исходный список: \n", my_list)
 
 # Ваинант 1  - оторбражение типов элементов
-print("Вариант 1")
+print("\nВариант 1")
 for el in my_list:
     print(el, " type is:", type(el))
 
-print("")
 # Вариант 2 - оставить в списке только элементы заданного типа
-print("Вариант 2")
-items_type = float # тип задается здесь
+print("\nВариант 2")
+items_type = int # тип задается здесь
 items_to_remove = []
-
 for pos in range(len(my_list)):
-    if not(isinstance(my_list[pos], items_type)):
+    if type(my_list[pos]) != items_type:
         items_to_remove.append(my_list[pos])
 for el in items_to_remove:
     my_list.remove(el)
