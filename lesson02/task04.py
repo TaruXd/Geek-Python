@@ -6,4 +6,4 @@ string_input = input("Введите сроку из нескольких сло
 
 my_list = string_input.split(" ")
 for pos in range(len(my_list)):
-    print("Строка №", pos + 1, " ", my_list[pos][1:10])
+    print("Строка №", pos + 1, " ", my_list[pos][0:9])

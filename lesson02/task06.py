@@ -45,7 +45,7 @@ while not stop:
     product_tuple = (counter, new_product_dict)
 # Добавление в список товаров нового товара
     products_list.append(product_tuple)
-    counter += counter
+    counter += 1
 
 # Запрос на добавление ещё одого нового товара. В случае n - выход из цикла создания списка товаров
     next_product = input("Добавить ещё товар? Y/N :")
