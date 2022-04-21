@@ -17,8 +17,7 @@ while True:
             print(check_element_error)
         else:
             my_list.append(new_element)
-            my_list.sort()
-            my_list.reverse()
+            my_list.sort(reverse=True)
             print(my_list)
     except ValueError:
         error = 1
