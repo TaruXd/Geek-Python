@@ -9,7 +9,7 @@ import re
 
 def int_func(words):
     result = ""
-    if words == words.lower() and re.search(r'[^a-z]', words) == None:
+    if words == words.lower() and re.search(r'[^a-z ]', words) == None:
         words = words.split(" ")
         for pos in range(len(words)):
             result += words[pos].lower().capitalize() + " "
