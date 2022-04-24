@@ -12,7 +12,7 @@ def int_func(words):
     if words == words.lower() and re.search(r'[^a-z ]', words) == None:
         words = words.split(" ")
         for pos in range(len(words)):
-            result += words[pos].lower().capitalize() + " "
+            result += words[pos].capitalize() + " "
         return result.rstrip(" ")
     else:
         return "Ошибка! Строка должна быть из слов на латинице и в нижнем регистре"
