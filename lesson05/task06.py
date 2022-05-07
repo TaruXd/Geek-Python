@@ -21,6 +21,6 @@ with codecs.open('task06.txt', 'r', 'utf-8') as my_file:
             line[idx] = ''.join(i for i in line[idx] if i.isdigit())
             if line[idx].isdigit():
                  total += int(line[idx])
-        my_dict.update({line[0]: total})
+        my_dict.update({line[0].rstrip(":"): total})
 
 print(my_dict)
