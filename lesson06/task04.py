@@ -14,7 +14,7 @@ class Car:
     color: str
     is_police: bool = False
 
-    def __init__(self, name, speed, color):
+    def __init__(self, name: str, speed: float, color: str):
         self.name = name
         self.speed = speed
         self.color = color
@@ -25,7 +25,7 @@ class Car:
     def stop(self):
         print(f"Car {self.name} stopped")
 
-    def turn(self, direction):
+    def turn(self, direction: int):
         if direction in [-1, 1]:
             if direction == -1:
                 print(f"Car {self.name} turned left")
@@ -35,33 +35,31 @@ class Car:
             raise ValueError("Direction attribute can be -1 (left) or 1 (right)")
 
     def show_speed(self):
-        print(f"Speed: {self.speed}")
+        print(f"{self.speed}")
 
 
 class TownCar(Car):
 
     def show_speed(self):
+        super().show_speed()
         max_speed = 60
         if self.speed > max_speed:
-            print(f"Speed: {self.speed} > max ({max_speed}) allowed")
-        else:
-            print(f"Speed: {self.speed}")
+            print(f"Speed alert: {self.speed} > max ({max_speed}) allowed")
 
 
 class WorkCar(Car):
 
     def show_speed(self):
+        super().show_speed()
         max_speed = 40
         if self.speed > max_speed:
-            print(f"Speed: {self.speed} > max ({max_speed}) allowed")
-        else:
-            print(f"Speed: {self.speed}")
+            print(f"Speed alert: {self.speed} > max ({max_speed}) allowed")
 
 
 class SportCar(Car):
     nitro_boost: float
 
-    def __init__(self, name, speed, color, nitro_boost):
+    def __init__(self, name: str, speed: float, color: str, nitro_boost: float):
         super().__init__(name, speed, color)
         self.nitro_boost = nitro_boost
 
@@ -70,9 +68,7 @@ class SportCar(Car):
 
 
 class PoliceCar(Car):
-    def __init__(self, name, speed, color):
-        super().__init__(name, speed, color)
-        self.is_police = True
+    is_police: bool = True
 
 
 print("\nПример вывода атрибутов и методов класса:")

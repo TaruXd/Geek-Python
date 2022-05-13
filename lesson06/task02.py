@@ -10,19 +10,17 @@
 class Road:
     _length: float
     _width: float
-    _thickness: float
     _weight: float
 
-    def __init__(self, lenght, width, thickness, weight):
+    def __init__(self, lenght: float, width: float, weight: float):
         self._length = lenght
         self._width = width
-        self._thickness = thickness
         self._weight = weight
 
-    def square(self):
-        return self._length * self._width * self._thickness * self._weight
+    def square(self, thickness):
+        return self._length * self._width * thickness * self._weight / 1000
 
 
-road_1 = Road(10, 20, 5, 25)
+road_1 = Road(10, 20, 25)
 
-print(f"Square calculcation result: {road_1.square()}")
+print(f"Square calculcation result: {road_1.square(5)}")

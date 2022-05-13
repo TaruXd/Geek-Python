@@ -13,7 +13,7 @@ class Worker:
     position: str
     _income: dict
 
-    def __init__(self, name, surname, position, wage, bonus):
+    def __init__(self, name: str, surname: str, position: str, wage: float, bonus: float):
         self.name = name
         self.surname = surname
         self.position = position
