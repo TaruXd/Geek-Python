@@ -11,7 +11,7 @@ class TrafficLight:
     __color: str
 
     def running(self):
-        colours = ("Red", "Yellow", "Green")
+        colours = ("\033[31mRed", "\033[33mYellow", "\033[32mGreen")
         while True:
             self.__color = colours[0]
             print(self.__color)
