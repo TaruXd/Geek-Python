@@ -27,6 +27,7 @@ class Cell:
     cell_amount: int
 
     def __init__(self, cell_amount: int):
+        assert cell_amount > 0, "Количество ячеек клетки должно быть положительным целым числом"
         self.cell_amount = cell_amount
 
     def __add__(self, other):
@@ -59,13 +60,14 @@ class Cell:
         else:
             raise TypeError("Деление возможно только для объетов класса Cell")
 
-    def make_order(self, collumns: int):
+    @staticmethod
+    def make_order(cell_object: 'Cell', collumns: int):
         order = ""
-        for x in range(1, self.cell_amount + 1):
+        for x in range(1, cell_object.cell_amount + 1):
             if x % collumns != 0:
                 order += "*"
             else:
-                if x == self.cell_amount:
+                if x == cell_object.cell_amount:
                     order += "*"
                 else:
                     order += "*\n"
@@ -93,4 +95,4 @@ cell_6 = Cell(cell_1 / cell_2)
 print(f"Деление: {cell_6.cell_amount}")
 
 print("Ячейки первой клетки в заданном порядке:")
-cell_1.make_order(4)
+Cell.make_order(cell_1, 4)

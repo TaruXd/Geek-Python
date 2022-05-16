@@ -17,6 +17,7 @@ class Clothes(ABC):
     def __init__(self, name: str):
         self.name = name
 
+    @property
     @abstractmethod
     def materials(self):
         pass
@@ -30,7 +31,7 @@ class Coat(Clothes):
 
     @property
     def materials(self):
-        return round(self.size/6.5 + 0.5, 2)
+        return round(self.size / 6.5 + 0.5, 2)
 
 
 class Suit(Clothes):
