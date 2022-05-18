@@ -12,6 +12,13 @@
 # на склад, нельзя использовать строковый тип данных.
 # Подсказка: постарайтесь по возможности реализовать в проекте «Склад оргтехники»
 # максимум возможностей, изученных на уроках по ООП.
+import sys
+from abc import ABC, abstractmethod
+
+
+def str_to_class(classname):
+    return getattr(sys.modules[__name__], classname)
+
 
 class NotFoundItems(Exception):
     def __init__(self, wrong_keys: list):
@@ -39,7 +46,7 @@ class MaxCapacityExceeded(Exception):
 
 
 class OEStorage:
-    _name: str
+    name: str
     max_capacity: int = 1
     current_storage: dict = {}
 
@@ -93,38 +100,58 @@ class OEStorage:
         except NotFoundItems:
             print(NotFoundItems(wrong_keys))
 
+    def get_items_info(self, equip_type: str, model: str):
+        pass
 
-class OfficeEquipment:
-    type: str
+
+
+class OfficeEquipment(ABC):
     model: str
     price: float
+    equip_type: str
 
     def __init__(self, model: str, price: float):
         self.model = model
+        self.equip_type = str(self.__class__.__name__)
         self.price = price
 
-class Printer(OfficeEquipment):
+    @property
+    @abstractmethod
+    def guarantee_period(self):
+        pass
 
+
+class Printer(OfficeEquipment):
     is_colored: bool
 
     def __init__(self, model: str, price: float, is_colored: bool):
         super().__init__(model, price)
         self.is_colored = is_colored
-        self.type = "Printer"
+
+    @property
+    def guarantee_period(self):
+        if self.is_colored:
+            return self.price // 100
+        else:
+            return self.price // 50
 
 
 class Scanner(OfficeEquipment):
-
     dpi: int
 
     def __init__(self, model: str, price: float, dpi: int):
         super().__init__(model, price)
         self.dpi = dpi
-        self.type = "Scanner"
+
+    @property
+    def guarantee_period(self):
+        if self.dpi > 350:
+            return self.price // 90
+        else:
+            return self.price // 50
 
 
 class Xerox(OfficeEquipment):
-
     dpi: int
     is_colored: bool
 
@@ -132,8 +159,19 @@ class Xerox(OfficeEquipment):
         super().__init__(model, price)
         self.is_colored = is_colored
         self.dpi = dpi
-        self.type = "Xerox"
 
+    @property
+    def guarantee_period(self):
+        if self.is_colored or self.dpi > 350:
+            return self.price // 120
+        else:
+            return self.price // 45
+
+def get_eqipment_info(args: list[object]):
+    result = []
+    for el in range(len(args)):
+        result.append([hash(args[el]), args[el].__dict__])
+    return result
 
 storage_1 = OEStorage("Moscow", 10)
 
@@ -143,14 +181,38 @@ printer_2 = Printer("printer_2", 2000, True)
 scanner_1 = Scanner("scanner_1", 500, 420)
 scanner_2 = Scanner("scanner_2", 750, 480)
 
-
 xerox_1 = Xerox("xerox_1", 250, True, 300)
 xerox_2 = Xerox("xerox_2", 350, True, 350)
 
-storage_1.receive_items({"xerox": 4, "printer": 2, "scanner": 3})
-print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
-storage_1.send_items({"xerox": 1, "printer": 1, "scanner": 2})
-print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
-storage_1.send_items({"xeroxsdf": 1, "printer": 2, "scanner": 1})
-print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
+equipment = [printer_1, printer_2, scanner_1, scanner_2, xerox_1, xerox_2]
+
+
+eqipment_info = get_eqipment_info([printer_1, scanner_2, scanner_1, scanner_1])
+print("Перечень текущих доступных объектов: ")
+print(*eqipment_info, sep="\n")
+
+request_equipmnet = input("Введите название модели: ")
+
+
+def str_to_equimplent_dict(request_equipmnet: str):
+    success = False
+    for x in equipment:
+        if request_equipmnet == x.__dict__.get('model'):
+            success = True
+            return x.__dict__
+    if not success:
+        return None
+
+
+print(str_to_equimplent_dict(request_equipmnet))
+
+
+
+
+# storage_1.receive_items({"xerox": 4, "printer": 2, "scanner": 3})
+# print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
+# storage_1.send_items({"xerox": 1, "printer": 1, "scanner": 2})
+# print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
+# storage_1.send_items({"xeroxsdf": 1, "printer": 2, "scanner": 1})
+# print(f"Остатки на складе: {storage_1.current_storage}\nИтого товаров: {storage_1.total_items_count}\n")
 
