@@ -15,6 +15,7 @@
 import sys
 import json
 import os.path
+import copy
 
 from abc import ABC, abstractmethod
 
@@ -114,7 +115,7 @@ class Xerox(OfficeEquipment):
 def get_eqipment_info(args: list[object]):
     result = []
     for el in range(len(args)):
-        result.append([hash(args[el]), args[el].__dict__])
+        result.append([args[el].__dict__])
     return result
 
 
@@ -142,12 +143,12 @@ def str_to_equimpent_dict(request_equipment: str):
         return None
 
 
-def str_to_equipment_hash(request_equipment: str):
+def str_to_equipment_unique_key(request_equipment: str):
     success = False
     for x in equipment:
         if request_equipment == x.__dict__.get('model'):
             success = True
-            return hash(x)
+            return "".join([x.__dict__.get('equip_type'), x.__dict__.get('model')]).encode("utf-8").hex()
     if not success:
         return None
 
@@ -178,14 +179,14 @@ class OEStorage:
         print(f"\033[33m\nЗапуск операции получения товаров на склад склада\n\033[0mПеречень товаров для получения:")
         print(*items_to_add, sep="\n")
         try:
-            if self.total_items_count(self.current_storage) + self.total_items_count(items_to_add) < self.max_capacity:
-                for el_to_add in items_to_add:
-                    for el_storage in self.current_storage:
-                        if el_storage.get('hash') == el_to_add.get('hash'):
+            if self.total_items_count(self.current_storage) + self.total_items_count(items_to_add) <= self.max_capacity:
+                for el_storage in self.current_storage:
+                    for el_to_add in items_to_add:
+                        if el_storage.get('id') == el_to_add.get('id'):
                             current_amount = el_storage.get('amount')
-                            el_storage.update({"amount": el_storage.get('amount') + el_to_add.get('amount')})
-                            # items_to_add.remove(el_to_add)
-                    self.current_storage.append(el_to_add)
+                            el_storage.update({"amount": current_amount + el_to_add.get('amount')})
+                            items_to_add.remove(el_to_add)
+                self.current_storage.extend(items_to_add)
                 print("\033[32mТовары успешно добавлены\033[0m")
                 with open('storage_1.json', 'w') as file_json:
                     json.dump(self.current_storage, file_json)
@@ -197,51 +198,51 @@ class OEStorage:
     def send_items(self, items_to_send: list[dict]):
         print(f"\033[33m\nЗапуск операции отправки товаров со склада\nПеречень товаров для отправки:\033[0m")
         print(*items_to_send, sep="\n")
-        current_storage_backup = self.current_storage.copy()
+        current_storage_backup = copy.deepcopy(self.current_storage)
         wrong_keys = []
         wrong_values_keys = []
-        for el_to_send in items_to_send:
+        try:
             for el_storage in self.current_storage:
-                if el_to_send.get('hash') == el_storage.get('hash'):
-                    value_to_send = el_to_send.get('amount')
-                    current_value = el_storage.get('amount')
-                    if value_to_send <= current_value:
-                        el_storage.update({"amount": current_value - value_to_send})
-                        items_to_send.remove(el_to_send)
-                    else:
-                        wrong_values_keys.append(el_to_send.get('model'))
-        wrong_keys.extend(el_to_send.get('model') for el_to_send in items_to_send)
-        try:
+                for el_to_send in items_to_send:
+                    if el_to_send.get('id') == el_storage.get('id'):
+                        value_to_send = el_to_send.get('amount')
+                        current_value = el_storage.get('amount')
+                        if value_to_send <= current_value:
+                            el_storage.update({"amount": current_value - value_to_send})
+                            items_to_send.remove(el_to_send)
+                        else:
+                            wrong_values_keys.append(el_to_send.get('model'))
+            wrong_keys.extend(el_to_send.get('model') for el_to_send in items_to_send)
             if wrong_values_keys != []:
-                self.current_storage = current_storage_backup.copy()
                 raise NotEnoughItems(wrong_values_keys)
-        except NotEnoughItems:
-            print(NotEnoughItems(wrong_values_keys))
-        try:
             if wrong_keys != []:
-                self.current_storage = current_storage_backup.copy()
                 raise NotFoundItems(wrong_keys)
-        except NotFoundItems:
-            print(NotFoundItems(wrong_keys))
-
-        if self.current_storage != current_storage_backup:
             print("\033[32mТовары успешно отправлены\033[0m")
             with open('storage_1.json', 'w') as file_json:
                 json.dump(self.current_storage, file_json)
+        except NotEnoughItems:
+            self.current_storage = copy.deepcopy(current_storage_backup)
+            print(NotEnoughItems(wrong_values_keys))
+        except NotFoundItems:
+            self.current_storage = copy.deepcopy(current_storage_backup)
+            print(NotFoundItems(wrong_keys))
 
     def __str__(self):
-        if len(self.current_storage) == 0:
-            return "\nСклад пуст"
-        show = "\nТекущие остатки на складе: \n"
-        for el in self.current_storage:
-            show += str({'hash': el.get('hash')}) + " " + \
-                    str({'model': el.get('model')}) + " " +\
-                    str({'amount': el.get('amount')}) + " " + "\n"
-        return show
+        try:
+            if len(self.current_storage) == 0:
+                return "\nСклад пуст"
+            show = "\nТекущие остатки на складе: \n"
+            for el in self.current_storage:
+                show += str({'id': el.get('id')}) + " " + \
+                        str({'model': el.get('model')}) + " " +\
+                        str({'amount': el.get('amount')}) + " " + "\n"
+            return show
+        except Exception:
+            return f"\033[32mОшибка формирования списка остатков на складе\033[0m"
 
-    def get_items_info(self, hash):
+    def get_items_info(self, id):
         for el_storage in self.current_storage:
-            if el_storage.get('hash') == hash:
+            if el_storage.get('id') == id:
                 return el_storage
         return f"Заданный товар не найден"
 
@@ -254,8 +255,8 @@ def process_requests_equipment(input_data: str):
         return f"\033[31mВводимые данные должны содержать название модели и её количество, разделенные пробелом\033[0m"
     model, amount = requests_equipment[0], requests_equipment[1]
 
-    if str_to_equipment_hash(model) != None:
-        result.update({"hash": str_to_equipment_hash(model)})
+    if str_to_equipment_unique_key(model) != None:
+        result.update({"id": str_to_equipment_unique_key(model)})
         result.update(str_to_equimpent_dict(model))
     else:
         return f"\033[31mТовара {model} не существует\033[0m"
@@ -290,17 +291,7 @@ def form_request_equipment_list():
 
 
 
-storage_1 = OEStorage("Moscow", 10)
-
-
-def update_storage_items_hash(items_to_refresh: list[dict], equipment):
-    for el in items_to_refresh:
-        for x in equipment:
-                if el.get('model') == x.__dict__.get('model'):
-                    el.update({'hash': hash(x)})
-
-
-update_storage_items_hash(storage_1.current_storage, equipment)
+storage_1 = OEStorage("Moscow", 100)
 
 while True:
     try:
@@ -329,7 +320,7 @@ while True:
                 storage_1.send_items(request_equipment_list)
             case 5:
                 item = input("Введите название товара: ")
-                print(storage_1.get_items_info(str_to_equipment_hash(item)))
+                print(storage_1.get_items_info(str_to_equipment_unique_key(item)))
             case 6:
                 print(f"\nТекущая максимальная вместимость склада равна: {storage_1.max_capacity}")
                 current_total_items = storage_1.total_items_count(storage_1.current_storage)
