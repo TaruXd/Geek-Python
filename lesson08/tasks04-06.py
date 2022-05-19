@@ -282,7 +282,7 @@ def form_request_equipment_list():
     print("\033[33m\nФормирование списка товаров\033[0m")
     equipment_list = []
     while True:
-        input_data = input("Введите название модели и количество через пробел\nили Enter для завершения формирования списка: ")
+        input_data = input("Введите название модели и количество через пробел (например: printer_1 1)\nили Enter для завершения формирования списка: ")
         if input_data != "":
             attempt = process_requests_equipment(input_data)
             if isinstance(attempt, dict):
@@ -325,7 +325,7 @@ while True:
                 request_equipment_list = form_request_equipment_list()
                 storage_1.send_items(request_equipment_list)
             case 5:
-                item = input("Введите название товара: ")
+                item = input("Введите модель товара: ")
                 print(storage_1.get_items_info(str_to_equipment_unique_key(item)))
             case 6:
                 print(f"\nТекущая максимальная вместимость склада равна: {storage_1.max_capacity}")
