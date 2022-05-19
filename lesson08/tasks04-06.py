@@ -1,13 +1,13 @@
-# 4. Начните работу над проектом «Склад оргтехники». Создайте класс, описывающий склад.
+# Задание 4. Начните работу над проектом «Склад оргтехники». Создайте класс, описывающий склад.
 # А также класс «Оргтехника», который будет базовым для классов-наследников.
 # Эти классы — конкретные типы оргтехники (принтер, сканер, ксерокс). В базовом
 # классе определить параметры, общие для приведенных типов. В классах-наследниках
 # реализовать параметры, уникальные для каждого типа оргтехники.
-# 5. Продолжить работу над первым заданием. Разработать методы, отвечающие за приём
+# Задание 5. Продолжить работу над первым заданием. Разработать методы, отвечающие за приём
 # оргтехники на склад и передачу в определенное подразделение компании. Для хранения
 # данных о наименовании и количестве единиц оргтехники, а также других данных, можно
 # использовать любую подходящую структуру, например словарь.
-# 6. Продолжить работу над вторым заданием. Реализуйте механизм валидации вводимых
+# Задание 6. Продолжить работу над вторым заданием. Реализуйте механизм валидации вводимых
 # пользователем данных. Например, для указания количества принтеров, отправленных
 # на склад, нельзя использовать строковый тип данных.
 # Подсказка: постарайтесь по возможности реализовать в проекте «Склад оргтехники»
@@ -19,11 +19,7 @@ import copy
 
 from abc import ABC, abstractmethod
 
-
-def str_to_class(classname):
-    return getattr(sys.modules[__name__], classname)
-
-
+# Исключение для ситуации, когда со склада осуществляется попытка отправки товаров, которых нет на складе
 class NotFoundItems(Exception):
     def __init__(self, wrong_keys: list):
         self.wrong_keys = wrong_keys
@@ -31,7 +27,7 @@ class NotFoundItems(Exception):
     def __str__(self):
         return f"\033[31mТовары {', '.join(self.wrong_keys)} не найдены на складе. Операция отменена\033[0m"
 
-
+# Исключение для ситуации, когда со склада осуществляется попытка отправки количества товаров, которого нет на складе (т.е. есть, но меньше, чем требуется)
 class NotEnoughItems(Exception):
     def __init__(self, wrong_values_keys: list):
         self.wrong_values_keys = wrong_values_keys
@@ -39,7 +35,7 @@ class NotEnoughItems(Exception):
     def __str__(self):
         return f"\033[31mКоличество товаров {', '.join(self.wrong_values_keys)} для отправки превышает текущее наличие на складе. Операция отменена\033[0m"
 
-
+# Исключение для ситуации, когда на склад осуществляется попытка поставки количества товаров, которое превышает максимально возможное с учетом текущих товаров
 class MaxCapacityExceeded(Exception):
 
     def __init__(self, max_capacity):
@@ -48,7 +44,7 @@ class MaxCapacityExceeded(Exception):
     def __str__(self):
         return f"\033[31mПревышается максимальное количество товаров ({self.max_capacity}) на складе. Операция отменена\033[0m"
 
-
+# Класс для орг техники
 class OfficeEquipment(ABC):
     model: str
     price: float
@@ -59,12 +55,13 @@ class OfficeEquipment(ABC):
         self.equip_type = str(self.__class__.__name__)
         self.price = price
 
+# Атрибут + абстрактный метод. Период гарантии
     @property
     @abstractmethod
     def guarantee_period(self):
         pass
 
-
+# Класс для принтера
 class Printer(OfficeEquipment):
     is_colored: bool
 
@@ -79,7 +76,7 @@ class Printer(OfficeEquipment):
         else:
             return self.price // 50
 
-
+# Класс для сканнера
 class Scanner(OfficeEquipment):
     dpi: int
 
@@ -94,7 +91,7 @@ class Scanner(OfficeEquipment):
         else:
             return self.price // 50
 
-
+# Класс для ксерокса
 class Xerox(OfficeEquipment):
     dpi: int
     is_colored: bool
@@ -112,6 +109,7 @@ class Xerox(OfficeEquipment):
             return self.price // 45
 
 
+# Получить список атрибутов списка экземпляров класса
 def get_eqipment_info(args: list[object]):
     result = []
     for el in range(len(args)):
@@ -119,6 +117,7 @@ def get_eqipment_info(args: list[object]):
     return result
 
 
+# Определение экземпляров для классов орг техники
 printer_1 = Printer("printer_1", 1000, True)
 printer_2 = Printer("printer_2", 2000, True)
 
@@ -128,11 +127,13 @@ scanner_2 = Scanner("scanner_2", 750, 480)
 xerox_1 = Xerox("xerox_1", 250, True, 300)
 xerox_2 = Xerox("xerox_2", 350, True, 350)
 
+# Список экземпляров
 equipment = [printer_1, printer_2, scanner_1, scanner_2, xerox_1, xerox_2]
 
+# Список атрибутов экземпляров
 eqipment_info = get_eqipment_info(equipment)
 
-
+# Получение по имени объекта его атрибутов среди заведенного списка экземпляров товаров
 def str_to_equimpent_dict(request_equipment: str):
     success = False
     for x in equipment:
@@ -142,7 +143,7 @@ def str_to_equimpent_dict(request_equipment: str):
     if not success:
         return None
 
-
+# Формирование уникального ID для товара на складе
 def str_to_equipment_unique_key(request_equipment: str):
     success = False
     for x in equipment:
@@ -152,12 +153,13 @@ def str_to_equipment_unique_key(request_equipment: str):
     if not success:
         return None
 
-
+# Класс для склада орг техники
 class OEStorage:
     name: str
     max_capacity: int = 1
     current_storage: list[dict] = []
 
+# Получение суммарного количества товаров из списка словарей
     @staticmethod
     def total_items_count(items: list[dict]):
         result = 0
@@ -174,7 +176,7 @@ class OEStorage:
             with open("storage_1.json") as data:
                 self.current_storage = json.load(data)
 
-
+# Получение товаров на склад
     def receive_items(self, items_to_add: list[dict]):
         print(f"\033[33m\nЗапуск операции получения товаров на склад склада\n\033[0mПеречень товаров для получения:")
         print(*items_to_add, sep="\n")
@@ -195,6 +197,7 @@ class OEStorage:
         except MaxCapacityExceeded:
             print(MaxCapacityExceeded(self.max_capacity))
 
+# Отправка товаров со склада. В случае возникновения исключений, восстанавливается бэкап до начала операции
     def send_items(self, items_to_send: list[dict]):
         print(f"\033[33m\nЗапуск операции отправки товаров со склада\nПеречень товаров для отправки:\033[0m")
         print(*items_to_send, sep="\n")
@@ -227,6 +230,7 @@ class OEStorage:
             self.current_storage = copy.deepcopy(current_storage_backup)
             print(NotFoundItems(wrong_keys))
 
+# Вывод в удобном виде остатков на складе
     def __str__(self):
         try:
             if len(self.current_storage) == 0:
@@ -247,6 +251,7 @@ class OEStorage:
         return f"Заданный товар не найден"
 
 
+# Получение и обработка элемента списка товаров
 def process_requests_equipment(input_data: str):
     result = {}
     requests_equipment = input_data.split()
@@ -272,7 +277,7 @@ def process_requests_equipment(input_data: str):
         return "\033[31mКоличество товара должно быть натуральным числом\033[0m"
 
 
-
+# Формирование списка товаров для операции на складе
 def form_request_equipment_list():
     print("\033[33m\nФормирование списка товаров\033[0m")
     equipment_list = []
@@ -293,6 +298,7 @@ def form_request_equipment_list():
 
 storage_1 = OEStorage("Moscow", 100)
 
+print("\033[32mПри завершении программы результат выполнения операций на складе сохраняется в файл storage_1.json\nПри новом старте остатки на складе будут те же самые,\nчто при последнем завершении программы.\033[0m")
 while True:
     try:
         print("\nПеречень доступных команд:\n"
