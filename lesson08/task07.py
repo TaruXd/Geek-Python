@@ -9,7 +9,7 @@ class ComplexNumber:
     imag: float
 
     def __init__(self, real: float, imag: float):
-        assert not isinstance(real, float) or not isinstance(imag, float), "Реальная и мнимая части должны быть действительными числами"
+        assert not isinstance(real, float) or not isinstance(imag, float) or not isinstance(real, int) or not isinstance(imag, int), "Реальная и мнимая части должны быть действительными числами"
         self.real = real
         self.imag = imag
 
@@ -34,9 +34,9 @@ class ComplexNumber:
         # else:
         #     result += " + " + str(abs(self.imag)) + "i"
         # return result
-        return f"{self.real}{self.imag}i"
+        return f"{round(self.real,3)}{round(self.imag,3)}i"
 
-num_1 = ComplexNumber(1, -3)
+num_1 = ComplexNumber(1.2, -3)
 num_2 = ComplexNumber(-3, -8)
 print(f"Первое число: {num_1}")
 print(f"Действительная часть первого числа: {num_1.real}")

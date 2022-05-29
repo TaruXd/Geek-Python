@@ -31,11 +31,8 @@ while True:
 
     for el in new_elements:
         try:
-            if el.isdigit():
-                my_list.append(el)
-            else:
-                raise MyCheckFloatException(el)
-        except MyCheckFloatException:
+                my_list.append(float(el))
+        except:
             print(MyCheckFloatException(el))
 
 

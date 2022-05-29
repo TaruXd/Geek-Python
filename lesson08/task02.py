@@ -23,6 +23,8 @@ while True:
 
         print(f"Результат: {a / b}")
         exit()
+    except MyZeroDivisonException:
+        print(MyZeroDivisonException())
     except ValueError:
         print("Вводимые значения должны быть числовыми")
 
